@@ -23,11 +23,11 @@ return {
         dapui.close()
       end
       vim.keymap.set('n', '<Leader>b', dap.toggle_breakpoint, {})
-      vim.keymap.set('n', '<Leader>c', dap.continue, {}) 
+      vim.keymap.set('n', '<Leader>c', dap.continue, {})
     end
   },
-  { 
-    "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"} 
+  {
+    "rcarriga/nvim-dap-ui", dependencies = {"mfussenegger/nvim-dap", "nvim-neotest/nvim-nio"}
   }
 }
 
