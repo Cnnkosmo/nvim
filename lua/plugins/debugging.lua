@@ -10,6 +10,19 @@ return {
       local dapui = require("dapui")
       require("dapui").setup()
       require("dap-python").setup("~/.virtualenvs/debugpy/bin/python")
+      dap.configurations.python = {
+        {
+          type = 'python',
+          request = 'launch',
+          name = "Launch file",
+          program = "${file}",
+          pythonPath = function()
+            return "~/.virtualenvs/debugpy/bin/python"  -- Or another interpreter
+          end,
+          host = "0.0.0.0",  -- Custom host
+          port = 8000,         -- Custom port
+        },
+      }
       dap.listeners.before.attach.dapui_config = function()
         dapui.open()
       end
