@@ -9,17 +9,6 @@ return {
       local dap = require("dap")
       local dapui = require("dapui")
       dap.set_log_level('TRACE')
-      dap.configurations.cpp = {
-        {
-          name = "Launch file",
-          type = "codelldb", -- matches the adapter configuration
-          request = "launch",
-          program = "/Users/rtk/Documents/test_c_nvim_compile_n_run/main",  -- Full absolute path
-          cwd = '${workspaceFolder}', -- working directory, typically your project root
-          stopOnEntry = false,        -- start execution immediately, don't stop at the entry point
-          args = {},                  -- can add arguments to your program
-        },
-      }
 
       dap.adapters.codelldb = {
         type = "server",
@@ -30,27 +19,27 @@ return {
         },
       }
       dap.configurations.cpp = {
-      {
-        name = "Launch file",
-        type = "codelldb",
-        request = "launch",
-        program = function()
-          -- Prompt the user for the path to the executable
-          local executable = vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+        {
+          name = "Launch file",
+          type = "codelldb",
+          request = "launch",
+          program = function()
+            -- Prompt the user for the path to the executable
+            local executable = vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
 
-          -- Ensure that the path is properly expanded and valid
-          local expanded_executable = vim.fn.expand(executable)
-          if vim.fn.filereadable(expanded_executable) == 0 then
-            error("Executable not found: " .. expanded_executable)
-          end
+            -- Ensure that the path is properly expanded and valid
+            local expanded_executable = vim.fn.expand(executable)
+            if vim.fn.filereadable(expanded_executable) == 0 then
+              error("Executable not found: " .. expanded_executable)
+            end
 
-          return expanded_executable
-        end,
-        cwd = '${workspaceFolder}',   -- Set the working directory to the workspace folder
-        stopOnEntry = false,          -- Whether to stop at the entry point of the program
-        args = {},                    -- Pass any program arguments if needed
-      },
-    }
+            return expanded_executable
+          end,
+          cwd = '${workspaceFolder}',   -- Set the working directory to the workspace folder
+          stopOnEntry = false,          -- Whether to stop at the entry point of the program
+          args = {},                    -- Pass any program arguments if needed
+        },
+      }
       dap.configurations.c = dap.configurations.cpp
       dap.configurations.rust = dap.configurations.cpp
 
