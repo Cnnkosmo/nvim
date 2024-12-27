@@ -8,6 +8,7 @@ return {
     config=function()
       local dap = require("dap")
       local dapui = require("dapui")
+      local dap_python = require("dap-python")
       dap.set_log_level('TRACE')
 
       dap.adapters.codelldb = {
@@ -22,8 +23,7 @@ return {
         {
           name = "Launch file",
           type = "codelldb",
-          request = "launch",
-          program = function()
+          request = "launch", program = function()
             -- Prompt the user for the path to the executable
             local executable = vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
 
@@ -44,21 +44,8 @@ return {
       dap.configurations.rust = dap.configurations.cpp
 
       require("dapui").setup()
-      require("dap-python").setup("~/.virtualenvs/debugpy/bin/python")
-      dap.configurations.python = {
-        {
-          type = 'python',
-          request = 'launch',
-          name = "Launch file",
-          program = "${file}",
-          pythonPath = function()
-            return "~/.virtualenvs/debugpy/bin/python"  -- Or another interpreter
-          end,
-          host = "0.0.0.0",  -- Custom host
-          port = 8000,         -- Custom port
-        },
-      }
-      dap.listeners.before.attach.dapui_config = function()
+      dap_python.setup("/Users/rtk/Documents/test_py/.venv/bin/python")
+     dap.listeners.before.attach.dapui_config = function()
         dapui.open()
       end
       dap.listeners.before.launch.dapui_config = function()
