@@ -59,6 +59,9 @@ return {
           completeUnimported = true,
           clangdFileStatus = true,
         },
+        flags = {
+          debounce_text_changes = 150, -- Set a reasonable debounce delay
+        },
       })
 
       -- Keybindings for LSP
