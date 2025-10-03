@@ -1,5 +1,19 @@
 return {
   {
+    "jay-babu/mason-nvim-dap.nvim",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "mfussenegger/nvim-dap",
+    },
+    opts = {
+      ensure_installed = { "codelldb", "debugpy" },
+      automatic_installation = true,
+    },
+    config = function(_, opts)
+      require("mason-nvim-dap").setup(opts)
+    end,
+  },
+  {
     "mfussenegger/nvim-dap",
     dependencies = {
       "rcarriga/nvim-dap-ui",
@@ -20,10 +34,13 @@ return {
 
       local codelldb_cmd
       if ok_registry and mason_registry.has_package and mason_registry.has_package("codelldb") then
-        local codelldb = mason_registry.get_package("codelldb")
-        local extension_path = codelldb:get_install_path() .. "/extension/"
-        codelldb_cmd = extension_path .. "adapter/codelldb"
-      else
+        local ok_pkg, codelldb_pkg = pcall(mason_registry.get_package, "codelldb")
+        if ok_pkg and codelldb_pkg:is_installed() then
+          local extension_path = codelldb_pkg:get_install_path() .. "/extension/"
+          codelldb_cmd = extension_path .. "adapter/codelldb"
+        end
+      end
+      if not codelldb_cmd then
         local mason_path = vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/adapter/codelldb"
         if vim.fn.executable(mason_path) == 1 then
           codelldb_cmd = mason_path
@@ -128,8 +145,10 @@ return {
       local dap_python_exec
       if ok_dap_python then
         if ok_registry and mason_registry.has_package and mason_registry.has_package("debugpy") then
-          local debugpy = mason_registry.get_package("debugpy")
-          dap_python_exec = debugpy:get_install_path() .. "/venv/bin/python"
+          local ok_pkg, debugpy_pkg = pcall(mason_registry.get_package, "debugpy")
+          if ok_pkg and debugpy_pkg:is_installed() then
+            dap_python_exec = debugpy_pkg:get_install_path() .. "/venv/bin/python"
+          end
         end
 
         local fallback_python = vim.fn.exepath("python3")

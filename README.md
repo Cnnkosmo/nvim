@@ -9,7 +9,7 @@ This repository contains your Neovim setup powered by lazy.nvim. The notes below
 - `lua/vim-options.lua` keeps core editor settings.
 
 ## Python Debugging (debugpy)
-1. Install tools via Mason: run `:MasonInstall debugpy`. Mason places the adapter under `stdpath('data')/mason/packages/debugpy`.
+1. `mason-nvim-dap` ensures `debugpy` and `codelldb` are installed automatically. Open `:Mason` if you want to monitor or reinstall them.
 2. When Neovim loads, `dap-python` tries to use Mason's virtual environment (`.../debugpy/venv/bin/python`). If it is unavailable or not executable, it falls back to `python3` (then `python`).
 3. To force a specific interpreter (for example, a project venv), edit `lua/plugins/debugging.lua` and set `dap_python_exec` before the call to `dap_python.setup(...)`.
 4. The adapter is launched with a randomly selected free port. If you need a fixed port (for firewall rules), edit the `pick_random_port()` helper near the bottom of `lua/plugins/debugging.lua`.
