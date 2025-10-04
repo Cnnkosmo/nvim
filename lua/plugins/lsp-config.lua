@@ -53,7 +53,7 @@ return {
       local default_basedpyright_settings = {
         basedpyright = {
           analysis = {
-            typeCheckingMode = "basic",
+            typeCheckingMode = "off",
             diagnosticMode = "openFilesOnly",
             autoSearchPaths = true,
             autoImportCompletions = true,

@@ -20,6 +20,20 @@ vim.opt.rtp:prepend(lazypath)
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
+-- Ensure Neovim has a writable runtime dir for RPC sockets
+do
+  local default_runtime_dir = vim.fn.expand("~/.cache/nvim/run")
+  local runtime_dir = vim.env.XDG_RUNTIME_DIR or default_runtime_dir
+
+  if vim.fn.isdirectory(runtime_dir) == 0 then
+    vim.fn.mkdir(runtime_dir, "p", 448) -- 0700 permissions
+  else
+    pcall(vim.fn.setfperm, runtime_dir, "rwx------")
+  end
+
+  vim.env.XDG_RUNTIME_DIR = runtime_dir
+end
+
 
 --vim options
 require("vim-options")

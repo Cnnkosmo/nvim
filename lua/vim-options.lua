@@ -24,7 +24,7 @@ vim.diagnostic.config({
 
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
-    vim.diagnostic.enable(args.buf, nil, { virtual_text = true })
+    vim.diagnostic.enable(true, { bufnr = args.buf })
   end,
 })
 
