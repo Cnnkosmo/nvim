@@ -126,36 +126,68 @@ return {
       end
 
       if ok_dap_python then
-        dap_python.setup("uv", {
+        local fallback_python
+
+        if ok_registry and mason_registry.has_package and mason_registry.has_package("debugpy") then
+          local debugpy = mason_registry.get_package("debugpy")
+          local install_path = debugpy:get_install_path()
+          if package.config:sub(1, 1) == "\\" then
+            fallback_python = install_path .. "\\venv\\Scripts\\python.exe"
+          else
+            fallback_python = install_path .. "/venv/bin/python"
+          end
+        end
+
+        if not fallback_python or fallback_python == "" or vim.fn.executable(fallback_python) ~= 1 then
+          fallback_python = vim.fn.exepath("python3")
+          if fallback_python == "" then
+            fallback_python = vim.fn.exepath("python")
+          end
+          if fallback_python == "" then
+            fallback_python = nil
+          end
+        end
+
+        dap_python.setup(fallback_python, {
           console = "integratedTerminal",
         })
 
-        local orig_python_adapter = dap.adapters.python
+        local default_adapter = dap.adapters.python
 
-        local function is_uv_command(cmd)
-          if not cmd then
+        local uv_cmd = vim.fn.exepath("uv")
+        if uv_cmd == "" then
+          uv_cmd = "uv"
+        end
+
+        local function uv_supports_debugpy()
+          if uv_cmd == "" or vim.fn.executable(uv_cmd) ~= 1 then
             return false
           end
-          if cmd == "uv" then
-            return true
-          end
-          local tail = cmd:match("([^/\\]+)$")
-          return tail == "uv"
+          vim.fn.system({ uv_cmd, "run", "python", "-m", "debugpy", "--version" })
+          return vim.v.shell_error == 0
+        end
+
+        local function is_attach(config)
+          return config and config.request == "attach"
         end
 
         dap.adapters.python = function(callback, config)
-          orig_python_adapter(function(adapter)
-            if adapter.type == "executable" and is_uv_command(adapter.command) then
-              adapter.args = { "run", "--module", "debugpy.adapter" }
+          default_adapter(function(adapter)
+            if adapter and adapter.type == "executable" and not is_attach(config) and uv_supports_debugpy() then
+              local updated = vim.deepcopy(adapter)
+              updated.command = uv_cmd
+              updated.args = { "run", "--module", "debugpy.adapter" }
+              callback(updated)
+            else
+              callback(adapter)
             end
-            callback(adapter)
           end, config)
         end
 
         dap.adapters.debugpy = dap.adapters.python
       end
 
-      vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Debug: Toggle breakpoint" })
+      vim.keymap.set("n", "<leader>b", dap.toggle_breakpoint, { desc = "Debug: Toggle breakpoint" })
       vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Debug: Continue" })
       vim.keymap.set("n", "<leader>n", dap.step_over, { desc = "Debug: Step over" })
       vim.keymap.set("n", "<leader>i", dap.step_into, { desc = "Debug: Step into" })

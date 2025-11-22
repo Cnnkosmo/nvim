@@ -21,6 +21,8 @@ return {
       local util = require("lspconfig.util")
 
       local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities.textDocument.completion.completionItem.snippetSupport = true
+
       local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
       if ok_cmp then
         capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
@@ -83,6 +85,30 @@ return {
               },
             },
           },
+        },
+        emmet_language_server = {
+          filetypes = { "css", "eruby", "html", "javascript", "javascriptreact", "less", "sass", "scss", "pug", "typescriptreact" },
+          -- **Note:** only the options listed in the table are supported.
+          init_options = {
+              ---@type table<string, string>
+              includeLanguages = {},
+              --- @type string[]
+              excludeLanguages = {},
+              --- @type string[]
+              extensionsPath = {},
+              --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/preferences/)
+              preferences = {},
+              --- @type boolean Defaults to `true`
+              showAbbreviationSuggestions = true,
+              --- @type "always" | "never" Defaults to `"always"`
+              showExpandedAbbreviation = "always",
+              --- @type boolean Defaults to `false`
+              showSuggestionsAsSnippets = true,
+              --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/syntax-profiles/)
+              syntaxProfiles = {},
+              --- @type table<string, string> [Emmet Docs](https://docs.emmet.io/customization/snippets/#variables)
+              variables = {},
+            },
         },
         basedpyright = {
           root_dir = util.root_pattern(
